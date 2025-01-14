@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:esense_flutter/esense.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'dart:async';
-import 'dart:math' as math;
+import 'package:flutter/material.dart'; // Core Flutter library for UI
+import 'package:esense_flutter/esense.dart'; // eSense package for Bluetooth earable integration
+import 'package:permission_handler/permission_handler.dart'; // Permission handler for runtime permission requests
+import 'dart:async'; // For using Timer and asynchronous programming
+import 'dart:math' as math; // For mathematical functions
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyApp()); // entry point of the application
 }
 
 class MyApp extends StatelessWidget {
@@ -14,12 +14,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ESense Balance Ball',
+      title: 'ESense Balance Ball', // Application title
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.dark,
+        primarySwatch: Colors.blue, // Default theme color
+        brightness: Brightness.dark, // Dark theme
       ),
-      home: const ESensePage(),
+      home: const ESensePage(), // Starting page of the app
     );
   }
 }
@@ -28,43 +28,45 @@ class ESensePage extends StatefulWidget {
   const ESensePage({super.key});
 
   @override
-  ESensePageState createState() => ESensePageState();
+  ESensePageState createState() => ESensePageState(); // State management for ESensePage
 }
 
 class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
   final String deviceName = 'eSense-0114';
   bool _connected = false;
-  String _connectionStatus = 'Disconnected';
-  late final ESenseManager eSenseManager;
+  String _connectionStatus = 'Disconnected'; // Display message for connection status
+  late final ESenseManager eSenseManager; // Manager for eSense device communication
 
   // Ball position and game state
-  double _ballX = 0.0;
-  double _ballY = 0.0;
-  int _score = 0;
-  bool _isPlaying = false;
-  Timer? _gameTimer;
-  Timer? _countdownTimer;
-  int _timeLeft = 120;
-  List<Offset> _targets = [];
-  final double _ballSize = 20.0;
-  final double _targetSize = 30.0;
+  double _ballX = 0.0; // X-coordinate of the ball
+  double _ballY = 0.0; // Y-coordinate of the ball
+  int _score = 0; // Player's score
+  bool _isPlaying = false; // Game state
+  Timer? _gameTimer; // Timer for game updates
+  Timer? _countdownTimer; // Timer for countdown
+  int _timeLeft = 90; // Game duration in seconds
+  List<Offset> _targets = []; // List of target positions
+  final double _ballSize = 20.0; // Diameter of the ball
+  final double _targetSize = 30.0; // Diameter of each target
 
-  late AnimationController _connectAnimController;
+  late AnimationController _connectAnimController; // Animation for connection status
 
   @override
   void initState() {
     super.initState();
-    eSenseManager = ESenseManager(deviceName);
+    eSenseManager = ESenseManager(deviceName); // Initialize eSenseManager with device name
     _connectAnimController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     )..repeat(reverse: true);
 
+    // Request permissions and connect to eSense device
     requestBluetoothPermissions().then((_) {
       _connectToESense();
     });
   }
 
+  // Request necessary Bluetooth and location permissions
   Future<void> requestBluetoothPermissions() async {
     if (await Permission.bluetoothScan.isDenied) {
       await Permission.bluetoothScan.request();
@@ -81,6 +83,7 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
     }
   }
 
+  // Attempt to connect to the eSense device  
   Future<void> _connectToESense() async {
     setState(() => _connectionStatus = 'Connecting...');
     eSenseManager.connectionEvents.listen((event) {
@@ -90,10 +93,11 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
       });
 
       if (_connected) {
-        _onESenseConnected();
+        _onESenseConnected(); // Start listening to sensor data
       }
     });
 
+    // Retry connection if not immediately successful
     while (!_connected) {
       try {
         bool success = await eSenseManager.connect();
@@ -109,6 +113,7 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
     }
   }
 
+  // Start listening for sensor events once connected
   void _onESenseConnected() {
     eSenseManager.setSamplingRate(10).then((_) {
       eSenseManager.sensorEvents.listen((event) {
@@ -130,6 +135,7 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
     });
   }
 
+  // Constrain the ball's movement to the playfield
   void updateBallPosition() {
     double playfieldWidth = 300; // Playfield width (from the container size)
     double playfieldHeight = 300; // Playfield height (from the container size)
@@ -187,6 +193,7 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
     });
   }
 
+  // Display game over dialog
   void _showGameOverDialog() {
     showDialog(
       context: context,
@@ -208,6 +215,7 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
     );
   }
 
+  // Reset the game state
   void _resetGame() {
     setState(() {
       _score = 0;
@@ -218,7 +226,8 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
       _isPlaying = false;
     });
   }
-
+  
+  // Add a new target at a random position
   void _addNewTarget() {
     final random = math.Random();
     double x = random.nextDouble() * 300 - 150;
@@ -226,6 +235,7 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
     setState(() => _targets.add(Offset(x, y)));
   }
 
+ // Update game state
   void _updateGame(Timer timer) {
     if (!_isPlaying) return;
 
@@ -240,6 +250,7 @@ class ESensePageState extends State<ESensePage> with TickerProviderStateMixin {
     }
   }
 
+  // Check for collisions with targets
   bool _checkCollision(Offset target) {
     final distance = math.sqrt(
       math.pow(_ballX - target.dx, 2) + math.pow(_ballY - target.dy, 2),
