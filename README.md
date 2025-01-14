@@ -1,16 +1,53 @@
-# flutter_app
+# ESense Balance Ball
 
-A new Flutter project.
+Control a ball using ESense earphones to collect targets in this fun and interactive game!
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Features](#features)
+3. [Technologies Used](#technologies-used)
+4. [Setup and Installation](#setup-and-installation)
+5. [How to Play](#how-to-play)
+6. [Screenshots](#screenshots)
+7. [License](#license)
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Introduction
+The ESense Balance Ball game uses ESense earphones to control a virtual ball via gyroscope data. Tilt the earphones to navigate the ball, collect green targets, and score points within a 9--seconds timer. It combines wearable technology with an engaging gameplay experience.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## Features
+- **Gyroscope-Controlled Movement**: Utilize ESense earphones for real-time ball movement.
+- **Dynamic Gameplay**: Score points by collecting green targets while avoiding boundaries.
+- **1.5-Minute Timer**: Time-bound gameplay for added challenge.
+- **Connection Status Indicator**: Visual feedback on Bluetooth connection to the earphones.
+- **Responsive UI**: Sleek and intuitive design.
+
+---
+
+## Technologies Used
+- **Framework**: Flutter
+- **Hardware Integration**: ESense earphones
+- **Libraries**:
+  - `esense_flutter`: For accessing gyroscope data.
+  - `permission_handler`: For Bluetooth permissions.
+  - `dart:async`: For managing timers and asynchronous tasks.
+
+---
+
+## Setup and Installation
+
+1. **Prerequisites**:
+   - [Flutter SDK](https://flutter.dev/docs/get-started/install) installed on your machine.
+   - A pair of ESense earphones.
+   - Mobile device with Bluetooth support.
+
+2. **Clone the Repository**:
+   ```bash
+   git clone <repository_url>
+   cd <repository_directory>
+
